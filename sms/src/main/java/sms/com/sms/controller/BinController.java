@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
 import sms.com.sms.model.BinUser;
-
+import sms.com.sms.model.ReceiverDetails;
 import sms.com.sms.service.OTPService;
 import sms.com.sms.service.BinSevice;
 
@@ -49,12 +49,15 @@ public class BinController {
     public List<BinUser> getAllReceiverDetails() {
         return service.getAllDetails();
     }
-
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody BinUser details) {
+    public ResponseEntity<String> registerUser(@RequestBody BinUser
+ details) {
+    if (details.getPhonenumber() == null || details.getPhonenumber().isEmpty()) {
+        throw new IllegalArgumentException("Phone number is required");
+    }
         // Check if phone number already exists in the system
-        String response = service.sendOTP(details);
-        return ResponseEntity.ok(response);
+         service.sendOTP(details);
+        return ResponseEntity.ok("OTP sent successfully");
     }
 
     @PostMapping("/send-message-to-all-for-BinFull")
@@ -72,20 +75,22 @@ public class BinController {
   
     // Step 2: Validate OTP and Save BinUser
 
-    @PostMapping("/validate-otp")
-    public ResponseEntity<String> validateOtp(@RequestParam String phonenumber, @RequestParam String otp) {
-        if (otpService.validateOtp(phonenumber, otp)) {
-            // If OTP is valid, save the details
-
-            BinUser details = service.findTempUser(phonenumber);
-            if (details != null) {
-                service.saveUser(details);
-                return ResponseEntity.ok("User registered successfully.");
+   @PostMapping("/validate-otp")
+    public ResponseEntity<String> validateOtp(@RequestBody BinUser detail) {
+        if (detail.getOtp() == null || detail.getPhonenumber() == null) {
+            return ResponseEntity.ok( "OTP and phone number are required");
             }
-            return ResponseEntity.status(404).body("User data not found.");
+       else if (otpService.validateOtp(detail.getPhonenumber(), detail.getOtp())) {
+            // If OTP is valid, save the details
+         
+
+                return ResponseEntity.ok("User registered successfully.");
+            
+           
         } else {
             return ResponseEntity.status(400).body("Invalid OTP.");
         }
+       
     }
 
     /**
