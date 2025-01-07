@@ -52,7 +52,33 @@ public class TwilioSMSService {
 private void initializeTwilio() {
 
     Twilio.init(twilioConfig.getAccountSid(), twilioConfig.getAuthToken());
+} public String sendOtpForRegistrations(ReceiverDetails user) {
+    initializeTwilio();
+    // Check if the phone number is already registered
+    if (userService.isPhoneNumberRegistered(user.getPhonenumber())) {
+        return "Phone number already registered.";
+    }
+
+    // Generate a 6-digit OTP
+    String otp = OtpGenerator.generateOtp(null);
+
+    // Temporarily store user details and OTP for validation
+    otpService.storeOtp(user.getPhonenumber(), otp);
+    userService.saveTempUser(user); // Save the user temporarily
+
+    // Send OTP using Twilio API
+    try {
+        Message message = Message.creator(
+            new com.twilio.type.PhoneNumber(user.getPhonenumber()),
+            new com.twilio.type.PhoneNumber(twilioConfig.getFromNumber()),
+            "Welcome to our app! Your OTP is: " + otp
+        ).create();
+        return "OTP sent successfully to " + user.getPhonenumber() + ", SID: " + message.getSid();
+    } catch (Exception e) {
+        return "Failed to send OTP to " + user.getPhonenumber() + ": " + e.getMessage();
+    }
 }
+
     public String sendOtpForRegistration(ReceiverDetails user) {
         initializeTwilio();
         // Check if the phone number is already registered
@@ -61,7 +87,7 @@ private void initializeTwilio() {
         }
 
         // Generate a 6-digit OTP
-        String otp = OtpGenerator.generateOtp(6);
+        String otp = OtpGenerator.generateOtp(null);
 
         // Temporarily store user details and OTP for validation
         otpService.storeOtp(user.getPhonenumber(), otp);
@@ -105,7 +131,7 @@ private void initializeTwilio() {
 
         return "Message sent to all users.";
     }
-    public String sendOtpForRegistration(BinUser user) {
+    public String sendOtpForRegistrations(BinUser user) {
         initializeTwilio();
         // Check if the phone number is already registered
         if (binService.isPhoneNumberRegistered(user.getPhonenumber())) {
@@ -113,7 +139,7 @@ private void initializeTwilio() {
         }
 
         // Generate a 6-digit OTP
-        String otp = OtpGenerator.generateOtp(6);
+        String otp = OtpGenerator.generateOtps(null);
 
         // Temporarily store user details and OTP for validation
         otpService.storeOtp(user.getPhonenumber(), otp);

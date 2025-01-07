@@ -49,8 +49,7 @@ public class BinSevice {
     }
 
     public String sendOTP(BinUser user) {
-
-        return twilioSMSService.sendOtpForRegistration(user);
+        return twilioSMSService.sendOtpForRegistrations(user);
     }
     /**
      * Update receiver details by phone number.

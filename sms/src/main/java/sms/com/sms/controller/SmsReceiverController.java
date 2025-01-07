@@ -11,6 +11,7 @@ import sms.com.sms.service.SmsReceiverServiceImpl;
 import sms.com.sms.service.TwilioSMSService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/FireAlarm")
@@ -39,9 +40,12 @@ public class SmsReceiverController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody ReceiverDetails
  details) {
+    if (details.getPhonenumber() == null || details.getPhonenumber().isEmpty()) {
+        throw new IllegalArgumentException("Phone number is required");
+    }
         // Check if phone number already exists in the system
-        String response = service.sendOTP(details);
-        return ResponseEntity.ok(response);
+         service.sendOTP(details);
+        return ResponseEntity.ok("OTP sent successfully");
     }
    
     @PostMapping("/send-message-to-all-for-fireDetector")
@@ -72,19 +76,21 @@ public class SmsReceiverController {
     // Step 2: Validate OTP and Save ReceiverDetails
 
     @PostMapping("/validate-otp")
-    public ResponseEntity<String> validateOtp(@RequestParam String phonenumber, @RequestParam String otp) {
-        if (otpService.validateOtp(phonenumber, otp)) {
+    public ResponseEntity<String> validateOtp(@RequestBody ReceiverDetails details) {
+        if (details.getOtp() == null || details.getPhonenumber() == null) {
+            return ResponseEntity.ok( "OTP and phone number are required");
+            }
+       else if (otpService.validateOtp(details.getPhonenumber(), details.getOtp())) {
             // If OTP is valid, save the details
          
-ReceiverDetails details = service.findTempUser(phonenumber);
-            if (details != null) {
-                service.saveUser(details);
+
                 return ResponseEntity.ok("User registered successfully.");
-            }
-            return ResponseEntity.status(404).body("User data not found.");
+            
+           
         } else {
             return ResponseEntity.status(400).body("Invalid OTP.");
         }
+       
     }
 
     

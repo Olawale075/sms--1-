@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +28,11 @@ public class ReceiverDetails {
     private Long id;
     private String name;
     private String phonenumber;
+    
+
+    @Column(name = "get_otp", columnDefinition = "VARCHAR(6)") // Explicitly define the SQL type
+    private String Otp;
+
  
     @CreationTimestamp
     private LocalDateTime createDateTime;
@@ -36,6 +42,7 @@ public class ReceiverDetails {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
     }
+   
 
   
   

@@ -13,7 +13,7 @@ public class OTPService {
         otpStorage.put(phoneNumber, otp);
     }
 
-    public boolean validateOtp(String phoneNumber, String otp) {
+    public boolean validateOtp(String phoneNumber, Object otp) {
         return otp.equals(otpStorage.get(phoneNumber));
     }
 }

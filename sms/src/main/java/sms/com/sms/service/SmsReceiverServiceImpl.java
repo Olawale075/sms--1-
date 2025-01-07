@@ -2,6 +2,7 @@ package sms.com.sms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -55,7 +56,7 @@ public class SmsReceiverServiceImpl implements SmsReceiverService {
     }
 
     public String sendOTP(ReceiverDetails user) {
-
+    
         return twilioSMSService.sendOtpForRegistration(user);
     }
     /**

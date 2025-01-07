@@ -76,11 +76,11 @@ public class BinController {
     // Step 2: Validate OTP and Save BinUser
 
    @PostMapping("/validate-otp")
-    public ResponseEntity<String> validateOtp(@RequestBody BinUser detail) {
-        if (detail.getOtp() == null || detail.getPhonenumber() == null) {
+    public ResponseEntity<String> validateOtp(@RequestBody BinUser details) {
+        if (details.getOtp() == null || details.getPhonenumber() == null) {
             return ResponseEntity.ok( "OTP and phone number are required");
             }
-       else if (otpService.validateOtp(detail.getPhonenumber(), detail.getOtp())) {
+       else if (otpService.validateOtp(details.getPhonenumber(), details.getOtp())) {
             // If OTP is valid, save the details
          
 
