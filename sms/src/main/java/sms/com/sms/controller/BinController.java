@@ -50,15 +50,22 @@ public class BinController {
         return service.getAllDetails();
     }
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody BinUser
- details) {
-    if (details.getPhonenumber() == null || details.getPhonenumber().isEmpty()) {
-        throw new IllegalArgumentException("Phone number is required");
+    public ResponseEntity<String> registerUser(@RequestBody BinUser details) {
+        // Validate input
+        if (details.getPhonenumber() == null || details.getPhonenumber().isEmpty()) {
+            return ResponseEntity.badRequest().body("Phone number is required.");
+        }
+    
+        try {
+            // Send OTP to the provided phone number
+            String response = service.sendOTP(details);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Handle exceptions (e.g., phone number already exists or SMS sending fails)
+            return ResponseEntity.status(500).body("Error registering user: " + e.getMessage());
+        }
     }
-        // Check if phone number already exists in the system
-         service.sendOTP(details);
-        return ResponseEntity.ok("OTP sent successfully");
-    }
+    
 
     @PostMapping("/send-message-to-all-for-BinFull")
     public String sendMessageToAllFofFireDetector() { 

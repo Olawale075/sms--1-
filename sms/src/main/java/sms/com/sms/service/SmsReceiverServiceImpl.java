@@ -56,8 +56,13 @@ public class SmsReceiverServiceImpl implements SmsReceiverService {
     }
 
     public String sendOTP(ReceiverDetails user) {
-    
+    try {
         return twilioSMSService.sendOtpForRegistration(user);
+    } catch (Exception e) {
+        System.out.println("error"+ e);
+        return "Failed to send OTP to " + user.getPhonenumber() + ": " + e.getMessage();
+    }
+       
     }
     /**
      * Update receiver details by phone number.
